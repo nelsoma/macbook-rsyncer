@@ -84,7 +84,7 @@ fi
 if [[ -e "$SOURCE" && -e "$DESTINATION" ]]; then
 	if [[ "$NETWORKOK" == true &&  "$POWEROK" == true ]]; then
 		#echo "Good to sync!"
-		rsync --archive -v "$SOURCE" "$DESTINATION"
+		rsync --archive "$SOURCE" "$DESTINATION"
 	else
 		exit 1
 	fi
