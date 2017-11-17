@@ -57,10 +57,12 @@ echo $(pmset -g batt | head -n 1 |sed "s/\'//g"| awk '{print $4 $5}')
 }
 
 IFS=',' read -r -a WIFIS <<< "$ALLOWEDWIFI"
+# echo "${WIFIS[0]}"
 
 for i in "${WIFIS[@]}"
 do
   if [[ $i == $(getcurrentssid) ]]; then
+    # echo "$i"
   	NETWORKOK=true
   fi
 done
@@ -69,10 +71,11 @@ if [[ 'ACPower' == $(getcurrentbattery) ]]; then
   	POWEROK=true
 elif [[ 'BatteryPower' == $(getcurrentbattery) ]]; then
   	POWEROK=false
-  	#exit 1
+  	exit 1
 else
-	POWEROK=false
-	#exit 1
+    # Maybe some form of solar power? Who knows!
+    POWEROK=false
+    exit 1
 fi
 
 # Let's do some overly rigerous testing to see if our source and destination actually exist before
@@ -80,47 +83,24 @@ fi
 
 if [[ -e "$SOURCE" && -e "$DESTINATION" ]]; then
 	if [[ "$NETWORKOK" == true &&  "$POWEROK" == true ]]; then
-		echo "Good to sync!"
+		#echo "Good to sync!"
 		rsync --archive -v "$SOURCE" "$DESTINATION"
 	else
-		echo "blah"#exit 1
+		exit 1
 	fi
 elif [[ ! -e "$SOURCE" && ! -e "$DESTINATION" ]]; then
-	# echo "Source dir Dont exists!"
-	# echo "Dest dir Dont exists!"
+	# echo "Source dir doesn't exist!"
+	# echo "Dest dir doesn't exist!"
 	exit 1
 elif [[ ! -e "$SOURCE" ]]; then
-	# echo "Source dir Dont exists!"
+	# echo "Source dir doesn't exist!"
 	exit 1
 elif [[ ! -e "$DESTINATION" ]]; then
-	# echo "Dest dir Dont exists!"
+	# echo "Dest dir doesn't exist!"
 	exit 1
 else
 	# echo "I'm very confused!"
 	exit 1
 fi
 
-
-
-# echo "${WIFIS[0]}"
-
-# echo "${WIFIS[1]}"
-
-# echo "${WIFIS[2]}"
-
-# get power state
-
-#pmset -g batt | head -n 1 |sed "s/\'//g"| awk '{print $4 $5}'
-
-#ACPower or BatteryPower
-
-#get power state again
-
-#cat battery.fake.ac | head -n 1
-
-#' Wattage = 60W' or 'No adapter attached.'
-
-#Get wifi
-
-# /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk '/ SSID/ {print substr($0, index($0, $2))}'
 
